@@ -56,45 +56,56 @@
             // Insert your code here
             console.log("Viewer is ready");
 
-            fetch("status")
-              .then((response) => response.json())
-              .then((data) => {
-                api.updateAnnotation(
-                  0,
-                  {
-                    title: "CPU",
-                    content: "Temp: " + data.cpuTemp + "°C",
-                  },
-                  function (err, information) {
-                    if (!err) {
-                      window.console.log(information);
+            let traversed = false;
+            updateStatus().then(() => {
+              setInterval(updateStatus, 5000);
+            });
+            
+            function updateStatus() {
+              return fetch("status")
+                .then((response) => response.json())
+                .then((data) => {
+                  api.updateAnnotation(
+                    0,
+                    {
+                      title: "CPU: " + data.cpuTemp + "°C"
+                    },
+                    function (err, information) {
+                      if (!err) {
+                        window.console.log(information);
+                      }
                     }
-                  }
-                );
+                  );
 
-                api.updateAnnotation(
-                  1,
-                  {
-                    title: "GPU",
-                    content: "Temp: " + data.gpuTemp + "°C",
-                  },
-                  function (err, information) {
-                    if (!err) {
-                      window.console.log(information);
+                  api.updateAnnotation(
+                    1,
+                    {
+                      title: "GPU: " + data.gpuTemp + "°C"
+                    },
+                    function (err, information) {
+                      if (!err) {
+                        window.console.log(information);
+                      }
                     }
-                  }
-                );
+                  );
 
-                api.gotoAnnotation(
-                  0,
-                  { preventCameraAnimation: false, preventCameraMove: false },
-                  function (err, index) {
-                    if (!err) {
-                      window.console.log("Going to annotation", index + 1);
-                    }
+                  if (!traversed) {
+                    traversed = true;
+                    api.gotoAnnotation(
+                      0,
+                      {
+                        preventCameraAnimation: false,
+                        preventCameraMove: false,
+                      },
+                      function (err, index) {
+                        if (!err) {
+                          window.console.log("Going to annotation", index + 1);
+                        }
+                      }
+                    );
                   }
-                );
-              });
+                });
+            }
           });
         },
         error: function onError() {

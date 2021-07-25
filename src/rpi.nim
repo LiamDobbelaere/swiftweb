@@ -1,4 +1,4 @@
-import std/[parseutils, strutils]
+import std/[parseutils, strutils, osproc]
 
 proc measureGpuTempRaw*(): string =
     ## Measures the temperature, but returns the command output directly instead of parsing it.
